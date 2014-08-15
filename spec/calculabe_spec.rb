@@ -2,6 +2,9 @@ require 'rails_helper'
 
 describe 'Calculable' do
   describe '#calcualble_attr' do
+    before do
+      create(:account, tr_count: 5, tr_amount: 10)
+    end
 
     it 'will allow define calculable attributes in model' do
       Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.all }
