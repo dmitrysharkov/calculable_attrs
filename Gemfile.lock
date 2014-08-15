@@ -113,6 +113,6 @@ PLATFORMS
 DEPENDENCIES
   calculable!
   database_cleaner
-  factory_girl_rails
-  rspec-rails
+  factory_girl_rails (~> 4.0)
+  rspec-rails (~> 3.0.0)
   sqlite3
