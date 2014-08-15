@@ -2,24 +2,47 @@ require 'rails_helper'
 
 describe 'Calculable' do
   describe '#calcualble_attr' do
-    before do
-      create(:account, tr_count: 5, tr_amount: 10)
-    end
+    subject { create(:account, tr_count: 5, tr_amount: 10) }
 
-    it 'will allow define calculable attributes in model' do
-      Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.all }
-    end
-
-    it 'will allow define several attributes in model' do
-      Account.calculable_attr balance: 'SUM(transactions.amount)', number_of_transactions: 'COUNT(transactions.*)' do |variable|
-        Transaction.all
+    context 'one attr and block' do
+      before do
+        Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.all }
       end
+      it { is_expected.to respond_to :balance }
+      it { expect(subject.balance).to eq 50 }
     end
 
-    it 'will allow define specific foreign key' do
-      Account.calculable_attr balance: 'SUM(amount)', forign_key: 'transactions.account_id' do
-        Transaction.all
+    context 'one attr and lambda' do
+      before do
+        Account.calculable_attr balance: 'SUM(amount)', from: ->{ Transaction.all }
       end
+      it { is_expected.to respond_to :balance }
+      it { expect(subject.balance).to eq 50 }
+    end
+
+    context 'many attrs and block' do
+      before do
+        Account.calculable_attr balance: 'SUM(transactions.amount)', number_of_transactions: 'COUNT(transactions.*)' do
+          Transaction.all
+        end
+      end
+      it { is_expected.to respond_to :balance }
+      it { expect(subject.balance).to eq 50 }
+      it { is_expected.to respond_to :number_of_transactions }
+      it { expect(subject.number_of_transactions).to eq 5 }
+    end
+
+    context 'many attrs and block' do
+      before do
+        Account.calculable_attr balance:                'SUM(transactions.amount)',
+                                number_of_transactions: 'COUNT(transactions.*)',
+                                from:                    ->{ Transaction.all }
+      end
+
+      it { is_expected.to respond_to :balance }
+      it { expect(subject.balance).to eq 50 }
+      it { is_expected.to respond_to :number_of_transactions }
+      it { expect(subject.number_of_transactions).to eq 5 }
     end
 
     it 'will raise exception if no scope provided' do
@@ -28,10 +51,12 @@ describe 'Calculable' do
       end
       expect(no_scope).to raise_error("CALCULABLE: Relation was missed.")
     end
+    # it 'will allow define specific foreign key' do
+    #   Account.calculable_attr balance: 'SUM(amount)', forign_key: 'transactions.account_id' do
+    #     Transaction.all
+    #   end
 
-    it 'will allow provide relation as relation: lambda' do
-      Account.calculable_attr balance: 'SUM(amount)', relation: ->{ Transaction.all }
-    end
-
+    #   is_expected.to_not respond_to :forign_key
+    # end
   end
 end
