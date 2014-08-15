@@ -6,7 +6,7 @@ describe 'Calculable' do
 
     context 'one attr and block' do
       before do
-        Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.all }
+        Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.joins(:account).all }
       end
       it { is_expected.to respond_to :balance }
       it { expect(subject.balance).to eq 50 }
@@ -14,7 +14,7 @@ describe 'Calculable' do
 
     context 'one attr and lambda' do
       before do
-        Account.calculable_attr balance: 'SUM(amount)', from: ->{ Transaction.all }
+        Account.calculable_attr balance: 'SUM(amount)', from: ->{ Transaction.joins(:account).all}
       end
       it { is_expected.to respond_to :balance }
       it { expect(subject.balance).to eq 50 }
@@ -22,8 +22,8 @@ describe 'Calculable' do
 
     context 'many attrs and block' do
       before do
-        Account.calculable_attr balance: 'SUM(transactions.amount)', number_of_transactions: 'COUNT(transactions.*)' do
-          Transaction.all
+        Account.calculable_attr balance: 'SUM(transactions.amount)', number_of_transactions: 'COUNT(*)' do
+          Transaction.joins(:account).all
         end
       end
       it { is_expected.to respond_to :balance }
@@ -35,8 +35,8 @@ describe 'Calculable' do
     context 'many attrs and block' do
       before do
         Account.calculable_attr balance:                'SUM(transactions.amount)',
-                                number_of_transactions: 'COUNT(transactions.*)',
-                                from:                    ->{ Transaction.all }
+                                number_of_transactions: 'COUNT(*)',
+                                from:                    ->{ Transaction.joins(:account).all }
       end
 
       it { is_expected.to respond_to :balance }
