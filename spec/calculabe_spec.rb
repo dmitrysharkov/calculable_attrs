@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 describe 'Calculable' do
   describe '#calcualble_attr' do
@@ -23,7 +23,7 @@ describe 'Calculable' do
       no_scope = proc do
         Account.calculable_attr balance: 'SUM(amount)'
       end
-      expect(no_scope).to raise_error("CALCULABLE: Scope missed")
+      expect(no_scope).to raise_error("CALCULABLE: Relation was missed.")
     end
 
     it 'will allow provide relation as relation: lambda' do
