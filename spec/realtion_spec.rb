@@ -16,7 +16,7 @@ describe Calculable::ActiveRecord::Relation do
       subject { Account.all.calculate_attrs(:balance) }
 
       it { expect(subject.map(&:balance).sort).to eq [100, 200, 300] }
-      it { expect(subject.load).to be_executed_sqls(2) }
+      it { expect(lambda { subject.load }).to be_executed_sqls(2) }
     end
 
   end
