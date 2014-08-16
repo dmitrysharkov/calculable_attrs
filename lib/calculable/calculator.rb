@@ -63,6 +63,6 @@ class Calculable::Calculator
 
 
   def build_select(attrs)
-    attrs.map { |a| "#{ @formulas[a] } AS #{ a }" }.join(',')
+    attrs.map { |a| "#{ @formulas[a] } AS #{ a }" }.join(', ')
   end
 end
