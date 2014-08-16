@@ -10,6 +10,10 @@ describe Calculable::ActiveRecord::Base do
       end
       it { is_expected.to respond_to :balance }
       it { expect(subject.balance).to eq 50 }
+      it do
+        subject #force to execute insertions before
+        expect(->{ 10.times { subject.balance } } ).to be_executed_sqls(1)
+      end
     end
 
     context 'one attr and lambda' do
