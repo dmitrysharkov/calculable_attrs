@@ -20,11 +20,11 @@ module Calculable::ActiveRecord::Base
     end
 
     def calculable_attrs_calculators
-      @calculable_attr_calculators ||= {}
+      @calculable_attrs_calculators ||= {}
     end
 
     def calculable_attrs
-      calculable_attr_calculators.keys
+      calculable_attrs_calculators.keys
     end
   end
 
