@@ -38,15 +38,6 @@ module Calculable::ActiveRecord::Relation
   private
 
   def append_calculable_attrs
-
-
-    # ids = @records.map(&:id) unless attrs_to_calcualte.empty?
-
-    # attrs_to_calcualte.each do |calc, attrs|
-    #   values = calc.calculate(attrs, ids)
-    #   @records.each { |r| r.calculable_attrs_values = values[r.id] }
-    # end
-
     unless calculate_attrs_values.empty?
       models_calculable_scopes= {}
       collect_models_calculable_attrs(models_calculable_scopes, klass, calculate_attrs_values)
@@ -66,7 +57,11 @@ module Calculable::ActiveRecord::Relation
 
       case attrs_to_calcualte_item
       when Symbol
-        scope.add_attr(attrs_to_calcualte_item)
+        if klass.reflect_on_association(attrs_to_calcualte_item)
+          collect_association_calculable_attrs(models_calculable_scopes, klass, attrs_to_calcualte_item, true)
+        else
+          scope.add_attr(attrs_to_calcualte_item)
+        end
       when true
         scope.add_all_attrs
       when Hash
@@ -124,27 +119,4 @@ module Calculable::ActiveRecord::Relation
       end
     end
   end
-
-  # def build_attrs_to_calcualte(attrs)
-  #   attrs = [attrs] if attrs.is_a?(Array)
-  #   if calculate_attrs_values.size == 1 && calculate_attrs_values[0] == true
-  #     attrs = klass.calculable_attrs
-  #   else
-  #     attrs = calculate_attrs_values.map(&:to_sym)
-  #   end
-  #   build_attrs_to_calculate_for_class(klass, attrs)
-  # end
-
-  # def build_attrs_to_calculate_for_class(cls, attrs)
-  #   attrs_to_calculate = {}
-  #   attrs.each do |a|
-  #     calculator = cls.calculable_attrs_calculators[a]
-  #     if calculator
-  #       attrs_to_calculate[calculator] = (attrs_to_calculate[calculator] || []) | [a]
-  #     else
-  #       p "CALCUALBLE_ATTRS: WAINING: Model #{ klass.name } does't have dynamic attribute #{ a }. Probably you have to define it."
-  #     end
-  #   end
-  #   attrs_to_calculate
-  # end
 end
