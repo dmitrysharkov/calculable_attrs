@@ -52,7 +52,7 @@ describe Calculable::ActiveRecord::Relation do
       end
 
       context 'one attribute' do
-        subject { User.includes(:account).calculate_attrs(account: :balance).to_a.sort(&:id).map {|user| user.accouns.map(&:balance).sort } }
+        subject { User.includes(:accounts).calculate_attrs(accounts: :balance).to_a.sort(&:id).map {|user| user.accouns.map(&:balance).sort } }
         it { is_expected.to eq [[100, 200, 300],[1000, 2000, 3000]] }
         it { expect(lambda { subject }).to be_executed_sqls(3) }
       end
