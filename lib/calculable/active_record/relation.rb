@@ -29,7 +29,7 @@ module Calculable::ActiveRecord::Relation
       alias_method :calculable_orig_exec_queries, :exec_queries
       def exec_queries
         calculable_orig_exec_queries
-        calculable_calculate_attrs
+        append_calculable_attrs
         @records
       end
     end
@@ -37,7 +37,7 @@ module Calculable::ActiveRecord::Relation
 
   private
 
-  def calculable_calculate_attrs
+  def append_calculable_attrs
     attrs_to_calcualte  = build_attrs_to_calcualte
 
     ids = @records.map(&:id) unless attrs_to_calcualte.empty?
