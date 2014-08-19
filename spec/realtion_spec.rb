@@ -2,6 +2,11 @@ require 'rails_helper'
 
 describe Calculable::ActiveRecord::Relation do
   describe '#calculate_attrs' do
+    before do
+      Account.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }
+      User.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)', foreign_key: 'accounts.user_id') { Transaction.joins(:account).all }
+    end
+
     context 'method exists' do
       subject { Account.all }
       it { is_expected.to respond_to :calculate_attrs }
@@ -10,7 +15,6 @@ describe Calculable::ActiveRecord::Relation do
     describe 'without subordinately objects' do
       before do
         3.times { |i| create(:account, tr_count: 10 * (i + 1), tr_amount: 10) }
-        Account.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }
       end
 
       shared_examples 'balance attribute works in proper way' do
@@ -50,8 +54,6 @@ describe Calculable::ActiveRecord::Relation do
           user = create(:user)
           3.times { |i| create(:account, user: user, tr_count: 10 * (i + 1), tr_amount: 10 ** (ui + 1)) }
         end
-        Account.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }
-        User.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)', foreign_key: 'accounts.user_id') { Transaction.joins(:account).all }
       end
 
       context 'when has many' do
