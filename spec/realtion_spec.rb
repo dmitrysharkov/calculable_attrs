@@ -44,7 +44,7 @@ describe Calculable::ActiveRecord::Relation do
 
     context 'method works in proper with subordinately objects' do
       before do
-        2.times do |ui|
+        3.times do |ui|
           user = create(:user)
           3.times { |i| create(:account, user: user, tr_count: 10 * (i + 1), tr_amount: 10 ** (ui + 1)) }
         end
@@ -52,8 +52,8 @@ describe Calculable::ActiveRecord::Relation do
       end
 
       context 'one attribute' do
-        subject { User.includes(:accounts).calculate_attrs(accounts: :balance).to_a.sort(&:id).map {|user| user.accouns.map(&:balance).sort } }
-        it { is_expected.to eq [[100, 200, 300],[1000, 2000, 3000]] }
+        subject { User.includes(:accounts).calculate_attrs(accounts: :balance).order(:id).to_a.map {|user| user.accounts.map(&:balance).sort } }
+        it { is_expected.to eq [[100, 200, 300], [1000, 2000, 3000], [10000, 20000, 30000]] }
         it { expect(lambda { subject }).to be_executed_sqls(3) }
       end
 

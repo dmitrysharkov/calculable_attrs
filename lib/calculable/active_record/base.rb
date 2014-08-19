@@ -57,6 +57,7 @@ module Calculable::ActiveRecord::Base
   end
 
   def recalc_calculable_attr_with_siblings(name)
+    name = name.to_sym
     check_calculable_attr_name!(name)
     calculator = self.class.calculable_attrs_calculators[name]
     self.calculable_attrs_values = calculator.calculate_all(id)
