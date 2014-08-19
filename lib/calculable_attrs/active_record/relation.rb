@@ -19,7 +19,6 @@ module CalculableAttrs::ActiveRecord::Relation
 
   def calculate_attrs_values=(values)
     raise ImmutableRelation if @loaded
-    #check_cached_relation
     @values[:calculate_attrs] = values
   end
 
