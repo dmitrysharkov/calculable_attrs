@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Calculable::ActiveRecord::Base do
+describe CalculableAttrs::ActiveRecord::Base do
   describe '#calcualble_attr' do
     subject { create(:account, tr_count: 5, tr_amount: 10) }
 

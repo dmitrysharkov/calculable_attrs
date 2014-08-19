@@ -1,4 +1,4 @@
-module Calculable::ActiveRecord::Base
+module CalculableAttrs::ActiveRecord::Base
   module ClassMethods
     def calculable_attr(attrs, &block)
       relation = block ? lambda(&block) : attrs.delete(:from)
@@ -7,7 +7,7 @@ module Calculable::ActiveRecord::Base
       foreign_key = attrs.delete(:foreign_key) || "#{ name.tableize }.id"
       raise "CALCULABLE: At least one calculable attribute required." if attrs.empty?
 
-      calculator = Calculable::Calculator.new(foreign_key: foreign_key, relation: relation, attributes: attrs)
+      calculator = CalculableAttrs::Calculator.new(foreign_key: foreign_key, relation: relation, attributes: attrs)
 
       attrs.keys.each do |k|
         calculable_attrs_calculators[k.to_sym] = calculator

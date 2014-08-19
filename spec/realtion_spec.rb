@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Calculable::ActiveRecord::Relation do
+describe CalculableAttrs::ActiveRecord::Relation do
   describe '#calculate_attrs' do
     before do
       Account.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }

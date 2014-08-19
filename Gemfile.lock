@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    calculable (0.0.1)
+    calculable_attrs (0.0.1)
       rails (~> 4.1.4)
 
 GEM
@@ -120,7 +120,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
-  calculable!
+  calculable_attrs!
   database_cleaner
   factory_girl_rails (~> 4.0)
   pry

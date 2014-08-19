@@ -1,4 +1,4 @@
-module Calculable::ActiveRecord::Relation
+module CalculableAttrs::ActiveRecord::Relation
   def calculate_attrs(*attrs)
     spawn.calculate_attrs!(*attrs)
   end
@@ -52,7 +52,7 @@ module Calculable::ActiveRecord::Relation
 
   def collect_models_calculable_attrs(models_calculable_scopes, klass, attrs_to_calcualte)
     attrs_to_calcualte = [attrs_to_calcualte] unless attrs_to_calcualte.is_a?(Array)
-    scope = (models_calculable_scopes[klass] ||= Calculable::ModelCalculableAttrsScope.new(klass))
+    scope = (models_calculable_scopes[klass] ||= CalculableAttrs::ModelCalculableAttrsScope.new(klass))
     attrs_to_calcualte.each do |attrs_to_calcualte_item|
 
       case attrs_to_calcualte_item

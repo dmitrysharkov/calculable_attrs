@@ -1,4 +1,4 @@
-class Calculable::ModelCalculableAttrsScope
+class CalculableAttrs::ModelCalculableAttrsScope
   attr_reader :model, :ids, :attrs
 
   def initialize(model)

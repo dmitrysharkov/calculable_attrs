@@ -1,4 +1,4 @@
-class Calculable::Calculator
+class CalculableAttrs::Calculator
   CALCULABLE_FOREIGN_KEY = '__calculable_id__'
   attr_reader :attrs
 
