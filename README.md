@@ -50,11 +50,11 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
 Then you'll be able to use these fields like in the following examples:
 
 ```ruby
-  b = Users.first.balance
+  b = User.first.balance
 ```
 
 ```ruby
-  @accounts = Accounts.calculate_attrs
+  @accounts = Account.calculate_attrs
 
   ...
 
