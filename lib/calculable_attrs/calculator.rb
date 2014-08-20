@@ -8,10 +8,11 @@ class CalculableAttrs::Calculator
 
     @attrs = []
     @formulas = {}
+    @defaults = {}
 
     attributes.each do |key, val|
       key = key.to_sym
-      @formulas[key] = val
+      save_attribute_value(key, val)
       @attrs << key
     end
   end
@@ -41,6 +42,22 @@ class CalculableAttrs::Calculator
 
   private
 
+  def save_attribute_value(name, value)
+    case value
+    when String
+      @formulas[name] = value
+    when Array
+      if value.size == 2
+        @formulas[name] = value[0]
+        @defaults[name] = value[1]
+      else
+        raise "CALCUALBEL_ATTRS: Invalid attribute array for  #{ name }. Expected ['formula', default_value]"
+      end
+    else
+      raise "CALCUALBEL_ATTRS: Invalid attribute value for  #{ name }"
+    end
+  end
+
   def base_query(attrs, id)
     @relation.call.select(build_select(attrs)).where( @foreign_key => id)
   end
@@ -58,7 +75,7 @@ class CalculableAttrs::Calculator
   end
 
   def noramlize_one_record_result(attrs, record)
-    attrs.map { |a| [a, record.try(a) || 0] }.to_h
+    attrs.map { |a| [a, record.try(a) || ( @defaults.key?(a) ? @defaults[a] : 0)] }.to_h
   end
 
 
