@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = CalculableAttrs::VERSION
   s.authors     = ["Dmitry Sharkov"]
   s.email       = ["dmitry.sharkov@gmail.com"]
-  s.homepage    = "https://github.com/dmitrysharkov/calculable"
+  s.homepage    = "https://github.com/dmitrysharkov/calculable_attrs"
   s.summary     = "Simplifies work with dynamically calculable fields."
   s.description = <<-eos
     Imagine you an Account model which has many transactions.
