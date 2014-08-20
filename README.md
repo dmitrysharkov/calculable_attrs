@@ -70,7 +70,7 @@ Then you'll be able to use these fields like in the following examples:
   ...
 
   <% @users.each |user|%>
-    <% users.counts.each |acc|%>
+    <% users.accounts.each |acc|%>
       User Account Balance: <%= acc.balance %>
     <% end %>
   <% end %>
