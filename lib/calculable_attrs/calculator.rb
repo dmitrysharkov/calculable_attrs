@@ -18,7 +18,7 @@ class CalculableAttrs::Calculator
   end
 
   def calculate(attrs, id)
-    if(id.is_a?(Array))
+    if id.is_a?(Array)
       calculate_many(attrs, id)
     else
       calculate_one(attrs, id)
@@ -28,12 +28,12 @@ class CalculableAttrs::Calculator
   def calculate_many(attrs, ids)
     query = base_query(attrs, ids).select("#{ @foreign_key } AS #{ CALCULABLE_FOREIGN_KEY }").group(@foreign_key)
     records = query.load
-    noramlize_many_records_result(ids, attrs, records)
+    normalize_many_records_result(ids, attrs, records)
   end
 
   def calculate_one(attrs, id)
     record = base_query(attrs, id).load.first
-    noramlize_one_record_result(attrs, record)
+    normalize_one_record_result(attrs, record)
   end
 
   def calculate_all(id)
@@ -51,10 +51,10 @@ class CalculableAttrs::Calculator
         @formulas[name] = value[0]
         @defaults[name] = value[1]
       else
-        raise "CALCUALBEL_ATTRS: Invalid attribute array for  #{ name }. Expected ['formula', default_value]"
+        raise "CALCULABLE_ATTRS: Invalid attribute array for  #{ name }. Expected ['formula', default_value]"
       end
     else
-      raise "CALCUALBEL_ATTRS: Invalid attribute value for  #{ name }"
+      raise "CALCULABLE_ATTRS: Invalid attribute value for  #{ name }"
     end
   end
 
@@ -62,19 +62,19 @@ class CalculableAttrs::Calculator
     @relation.call.select(build_select(attrs)).where( @foreign_key => id)
   end
 
-  def noramlize_many_records_result(ids, attrs, records)
+  def normalize_many_records_result(ids, attrs, records)
     normalized = {}
     records.each do |row|
       id = row[CALCULABLE_FOREIGN_KEY].to_i
-      normalized[id] = noramlize_one_record_result(attrs, row)
+      normalized[id] = normalize_one_record_result(attrs, row)
     end
     ids.each  do |id|
-      normalized[id] ||= noramlize_one_record_result(attrs, nil)
+      normalized[id] ||= normalize_one_record_result(attrs, nil)
     end
     normalized
   end
 
-  def noramlize_one_record_result(attrs, record)
+  def normalize_one_record_result(attrs, record)
     attrs.map { |a| [a, record.try(a) || ( @defaults.key?(a) ? @defaults[a] : 0)] }.to_h
   end
 
