@@ -2,10 +2,10 @@ module CalculableAttrs::ActiveRecord::Base
   module ClassMethods
     def calculable_attr(attrs, &block)
       relation = block ? lambda(&block) : attrs.delete(:from)
-      raise "CALCULABLE: Relation was missed." unless relation
+      raise "CALCULABLE_ATTRS: Relation was missed." unless relation
 
       foreign_key = attrs.delete(:foreign_key) || "#{ name.tableize }.id"
-      raise "CALCULABLE: At least one calculable attribute required." if attrs.empty?
+      raise "CALCULABLE_ATTRS: At least one calculable attribute required." if attrs.empty?
 
       calculator = CalculableAttrs::Calculator.new(foreign_key: foreign_key, relation: relation, attributes: attrs)
 
@@ -71,7 +71,7 @@ module CalculableAttrs::ActiveRecord::Base
 
   def check_calculable_attr_name!(name)
     unless self.class.calculable_attrs_calculators[name.to_sym]
-      raise "CALCULABLE:  Unknown calculable attribute  #{ name } for model #{ self.class.name }"
+      raise "CALCULABLE_ATTRS:  Unknown calculable attribute  #{ name } for model #{ self.class.name }"
     end
   end
 end
