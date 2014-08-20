@@ -37,13 +37,14 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
  - the block after calculable_attr method has to return relation. This relation will be used as basis for aggregative functions mentioned above
  - you can use calculable_attr ..., from: -> { ... } instead of calculable_attr (...) { ... }
  - the default value for calculable_attr is 0 but you can specify it like:
- ```ruby
-  class Account < ActiveRecord::Base
-    has_many :transactions
-    belongs_to :user
-    calculable_attr(balance: ['SUM(amount)', '-'], number_of_transactions: ['COUNT(*)', nil]) { Transaction.joins(:account).all }
-  end
-```
+
+  ```ruby
+    class Account < ActiveRecord::Base
+      has_many :transactions
+      belongs_to :user
+      calculable_attr(balance: ['SUM(amount)', '-'], number_of_transactions: ['COUNT(*)', nil]) { Transaction.joins(:account).all }
+    end
+  ```
  - the default value for aggregation key is <relation>.id, but you can specify it with foreign_key:
 
 Then you'll be able to use these fields like in the following examples:
