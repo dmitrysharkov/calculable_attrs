@@ -83,7 +83,7 @@ Then you'll be able to use these fields like in the following examples:
   <% @users.each |user|%>
     User Balance: <%= user.balance %>
     User Transactions: <%= user.number_of_transactions %>
-    <% users.ccounts.each |acc|%>
+    <% users.accounts.each |acc|%>
       User Account Balance: <%= acc.balance %>
       User Account Transactions: <%= acc.number_of_transactions %>
     <% end %>
@@ -98,7 +98,7 @@ Then you'll be able to use these fields like in the following examples:
   <% @users.each |user|%>
     User Balance: <%= user.balance %>
     User Transactions: <%= user.number_of_transactions %>
-    <% users.ccounts.each |acc|%>
+    <% users.accounts.each |acc|%>
       User Account Balance: <%= acc.balance %>
       User Account Transactions: <%= acc.number_of_transactions %>
     <% end %>
