@@ -33,8 +33,8 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
 ```
 
 *NOTE:*
- - calculable_attr accepts a hash of calculable attributes { attribute_name: 'fomula' } where formula is SQL aggregative function
- - the block after calculable_attr method has to return relation. This relation will be used as basis for aggregative functions mentioned above
+ - calculable_attr accepts a hash of calculable attributes { attribute_name: 'formula' } where formula is SQL aggregation function
+ - the block after calculable_attr method has to return relation. This relation will be used as basis for aggregation functions mentioned above
  - you can use calculable_attr ..., from: -> { ... } instead of calculable_attr (...) { ... }
  - the default value for calculable_attr is 0 but you can specify it like:
 
@@ -70,7 +70,7 @@ Then you'll be able to use these fields like in the following examples:
   ...
 
   <% @users.each |user|%>
-    <% users.ccounts.each |acc|%>
+    <% users.counts.each |acc|%>
       User Account Balance: <%= acc.balance %>
     <% end %>
   <% end %>
@@ -108,7 +108,7 @@ Then you'll be able to use these fields like in the following examples:
 
 *NOTE:*
  - calculate_attrs solves n+1 queries problem
- - calculate_attrs takes an array of attributes to be pre-calcualted
+ - calculate_attrs takes an array of attributes to be pre-calculated
  - calculate_attrs undergrads associations (just like`includes` or `joins`)
  - calculate_attrs(true) means "calculate all attributes"
  - calculate_attrs with no parameters acts just like calculate_attrs(true)

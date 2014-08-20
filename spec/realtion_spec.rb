@@ -12,7 +12,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
       it { is_expected.to respond_to :calculate_attrs }
     end
 
-    describe 'without subordinately objects' do
+    describe 'without subordinated objects' do
       before do
         3.times { |i| create(:account, tr_count: 10 * (i + 1), tr_amount: 10) }
       end
@@ -48,7 +48,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
       end
     end
 
-    describe 'with subordinately objects' do
+    describe 'with subordinated objects' do
       before do
         3.times do |ui|
           user = create(:user)

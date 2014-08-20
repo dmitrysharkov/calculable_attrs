@@ -54,7 +54,7 @@ describe CalculableAttrs::ActiveRecord::Base do
         no_scope = proc do
           Account.calculable_attr balance: 'SUM(amount)'
         end
-        expect(no_scope).to raise_error("CALCULABLE_ATTRS: Relation was missed.")
+        expect(no_scope).to raise_error('CALCULABLE_ATTRS: Relation was missed.')
       end
     end
 

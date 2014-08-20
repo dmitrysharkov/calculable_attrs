@@ -7,9 +7,9 @@ class CalculableAttrs::ModelCalculableAttrsScope
     @ids = []
   end
 
-  def add_attr(attrribute)
-    attrribute = attrribute.to_sym
-    @attrs.push(attrribute) unless @attrs.include?(attrribute)
+  def add_attr(attribute)
+    attribute = attribute.to_sym
+    @attrs.push(attribute) unless @attrs.include?(attribute)
   end
 
   def add_all_attrs
@@ -26,32 +26,32 @@ class CalculableAttrs::ModelCalculableAttrsScope
 
   def calculate
     @calculable_attrs_values = nil
-    calculators_to_use.each do |calulator|
-      calcualted_values = calulator.calculate_many(attrs | @attrs, ids)
-      merge_calculated_values(calcualted_values)
+    calculators_to_use.each do |calculator|
+      calculated_values = calculator.calculate_many(attrs | @attrs, ids)
+      merge_calculated_values(calculated_values)
     end
   end
 
-  def calcualted_attrs_values(id)
+  def calculated_attrs_values(id)
     @calculable_attrs_values[id.to_i]
   end
 
 
   private
 
-  def merge_calculated_values(calcualted_values)
+  def merge_calculated_values(calculated_values)
     if @calculable_attrs_values
-      calcualted_values.each {|id,values| @calculable_attrs_values[id].merge!(calcualted_values[id]) }
+      calculated_values.each {|id, values| @calculable_attrs_values[id].merge!(calculated_values[id]) }
     else
-      @calculable_attrs_values = calcualted_values
+      @calculable_attrs_values = calculated_values
     end
   end
 
   def calculators_to_use
     calculators_to_use = []
     @attrs.each do |attribute|
-      calulator = @model.calculable_attrs_calculators[attribute]
-      calculators_to_use.push(calulator) unless calculators_to_use.include?(calulator)
+      calculator = @model.calculable_attrs_calculators[attribute]
+      calculators_to_use.push(calculator) unless calculators_to_use.include?(calculator)
     end
     calculators_to_use
   end
