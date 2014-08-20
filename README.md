@@ -109,6 +109,6 @@ Then you'll be able to use these fields like in the following examples:
  - calculate_attrs solves n+1 queries problem
  - calculate_attrs takes an array of attributes to be pre-calcualted
  - calculate_attrs undergrads associations (just like`includes` or `joins`)
- - calculate_attrs(true) and means "clulate all attributes"
+ - calculate_attrs(true) means "calculate all attributes"
  - calculate_attrs with no parameters acts just like calculate_attrs(true)
 
