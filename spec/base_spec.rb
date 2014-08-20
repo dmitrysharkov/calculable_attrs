@@ -53,7 +53,7 @@ describe CalculableAttrs::ActiveRecord::Base do
       no_scope = proc do
         Account.calculable_attr balance: 'SUM(amount)'
       end
-      expect(no_scope).to raise_error("CALCULABLE: Relation was missed.")
+      expect(no_scope).to raise_error("CALCULABLE_ATTRS: Relation was missed.")
     end
     # it 'will allow define specific foreign key' do
     #   Account.calculable_attr balance: 'SUM(amount)', forign_key: 'transactions.account_id' do
