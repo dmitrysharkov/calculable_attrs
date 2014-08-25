@@ -1,4 +1,4 @@
-module Calculable; end
+module CalculableAttrs; end
 
 require 'calculable_attrs/active_record'
 require 'calculable_attrs/calculator'
