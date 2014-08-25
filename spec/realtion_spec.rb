@@ -5,6 +5,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
     before do
       Account.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }
       User.calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)', foreign_key: 'accounts.user_id') { Transaction.joins(:account).all }
+      User.calculable_attr(number_of_accounts: 'COUNT(*)', foreign_key: 'accounts.user_id') { Account.all }
     end
 
     context 'method exists' do
@@ -61,6 +62,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
 
         subject(:users_balances) { scope.map(&:balance) }
         subject(:users_number_of_transactions) { scope.map(&:number_of_transactions) }
+        subject(:users_number_of_accounts) { scope.map(&:number_of_accounts) }
 
         subject(:accounts_balances) { scope.map {|user| user.accounts.map(&:balance).sort } }
         subject(:accounts_number_of_transactions) { scope.map {|user| user.accounts.map(&:number_of_transactions).sort } }
@@ -72,9 +74,12 @@ describe CalculableAttrs::ActiveRecord::Relation do
         end
 
         shared_examples 'balance and number_of_transactions attributes in proper way' do
-          it_behaves_like 'balance attribute works in proper way'
+          it { expect(users_balances).to eq [600, 6000, 60000] }
+          it { expect(accounts_balances).to eq [[100, 200, 300], [1000, 2000, 3000], [10000, 20000, 30000]] }
           it { expect(users_number_of_transactions).to eq [60, 60, 60] }
+          it { expect(users_number_of_accounts).to eq [3, 3, 3] }
           it { expect(accounts_number_of_transactions).to eq [[10, 20, 30], [10, 20, 30], [10, 20, 30]] }
+          it { expect(lambda { scope.load }).to be_executed_sqls(5) }
         end
 
         context 'one attribute' do
@@ -82,8 +87,8 @@ describe CalculableAttrs::ActiveRecord::Relation do
           it_behaves_like 'balance attribute works in proper way'
         end
 
-        context 'two attributes' do
-          let(:scope) { shared_scope.calculate_attrs(:balance, :number_of_transactions, accounts: [:balance, :number_of_transactions]) }
+        context 'tree attributes' do
+          let(:scope) { shared_scope.calculate_attrs(:balance, :number_of_transactions, :number_of_accounts, accounts: [:balance, :number_of_transactions]) }
           it_behaves_like 'balance and number_of_transactions attributes in proper way'
         end
 

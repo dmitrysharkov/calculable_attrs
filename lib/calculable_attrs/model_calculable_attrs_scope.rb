@@ -27,7 +27,7 @@ class CalculableAttrs::ModelCalculableAttrsScope
   def calculate
     @calculable_attrs_values = nil
     calculators_to_use.each do |calculator|
-      calculated_values = calculator.calculate_many(attrs | @attrs, ids)
+      calculated_values = calculator.calculate_many(calculator.attrs & @attrs, ids)
       merge_calculated_values(calculated_values)
     end
   end

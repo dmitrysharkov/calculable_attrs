@@ -54,7 +54,7 @@ module CalculableAttrs::ActiveRecord::Relation
     scope = (models_calculable_scopes[klass] ||= CalculableAttrs::ModelCalculableAttrsScope.new(klass))
     attrs_to_calculate.each do |attrs_to_calculate_item|
 
-      case attrs_to_calculate_item
+    case attrs_to_calculate_item
       when Symbol
         if klass.reflect_on_association(attrs_to_calculate_item)
           collect_association_calculable_attrs(models_calculable_scopes, klass, attrs_to_calculate_item, true)
