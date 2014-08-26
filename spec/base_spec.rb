@@ -76,4 +76,18 @@ describe CalculableAttrs::ActiveRecord::Base do
       end
     end
   end
+
+  describe '#calcualble_attrs_calculators' do
+    let(:account) { create(:account, tr_count: 5, tr_amount: 10) }
+    before do
+      Account.calculable_attr(balance: 'SUM(amount)'){ Transaction.joins(:account).all }
+    end
+    it { expect(Account).to respond_to(:calculable_attr_calculator) }
+    context 'calculator' do
+      subject { Account.calculable_attr_calculator(:balance) }
+      it { expect(subject).to be_a CalculableAttrs::Calculator }
+      it { expect(subject.attrs).to eq [:balance]  }
+      it { expect(subject.scoped_relation(account.id).map(&:amount)).to eq [10, 10, 10, 10, 10]  }
+    end
+  end
 end

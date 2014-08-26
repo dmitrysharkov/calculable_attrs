@@ -1,6 +1,6 @@
 class CalculableAttrs::Calculator
   CALCULABLE_FOREIGN_KEY = '__calculable_id__'
-  attr_reader :attrs
+  attr_reader :attrs, :relation, :foreign_key
 
   def initialize(relation: nil, foreign_key: nil, attributes: nil)
     @relation = relation
@@ -40,6 +40,14 @@ class CalculableAttrs::Calculator
     calculate(attrs, id)
   end
 
+  def base_query(attrs, id)
+    scoped_relation(id).select(build_select(attrs))
+  end
+
+  def scoped_relation(id)
+    @relation.call.where( @foreign_key => id)
+  end
+
   private
 
   def save_attribute_value(name, value)
@@ -58,9 +66,6 @@ class CalculableAttrs::Calculator
     end
   end
 
-  def base_query(attrs, id)
-    @relation.call.select(build_select(attrs)).where( @foreign_key => id)
-  end
 
   def normalize_many_records_result(ids, attrs, records)
     normalized = {}

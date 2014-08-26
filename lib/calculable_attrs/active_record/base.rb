@@ -26,6 +26,10 @@ module CalculableAttrs::ActiveRecord::Base
     def calculable_attrs
       calculable_attrs_calculators.keys
     end
+
+    def calculable_attr_calculator(attr)
+      calculable_attrs_calculators[attr]
+    end
   end
 
   def self.included(base)
