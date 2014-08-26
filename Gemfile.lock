@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    calculable_attrs (0.0.1)
-      rails (~> 4.1)
+    calculable_attrs (0.0.8)
+      activerecord (>= 3.2)
 
 GEM
   remote: https://rubygems.org/
@@ -114,5 +114,6 @@ DEPENDENCIES
   calculable_attrs!
   database_cleaner
   factory_girl_rails (~> 4.0)
+  rails (>= 3.2)
   rspec-rails (~> 3.0)
   sqlite3
