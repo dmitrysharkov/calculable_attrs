@@ -47,9 +47,9 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
 ```
 
 ####NOTES
- - calculable_attr accepts a hash of calculable attributes { attribute_name: 'formula' } where formula is SQL aggregation function
+ - `#calculable_attr` accepts a hash of calculable attributes (like `{ attribute_name: 'formula' }` where formula is SQL aggregation function).
  - the block after calculable_attr method has to return relation. This relation will be used as basis for aggregation functions mentioned above
- - you can use calculable_attr ..., from: -> { ... } instead of calculable_attr (...) { ... }
+ - you can use `calculable_attr ..., from: -> { ... }` instead of `calculable_attr (...) { ... }`
  - the default value for calculable_attr is 0 but you can specify it like:
 
   ```ruby
@@ -59,15 +59,23 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
       calculable_attr(balance: ['SUM(amount)', '-'], number_of_transactions: ['COUNT(*)', nil]) { Transaction.joins(:account).all }
     end
   ```
- - the default value for aggregation key is <relation>.id, but you can specify it with foreign_key:
+ - the default value for aggregation key is `"#{ Model }.id"`, but` you can specify it with `foreign_key:` like in example below:
+   ```ruby
+     class Account < ActiveRecord::Base
+       has_many :transactions
+       belongs_to :user
+       calculable_attr(balance: 'SUM(amount)', foreign_key: 'account_id') { Transaction.all }
+     end
+   ```
 
 ###Single record
 After calculable attributes defined you'll be able to use these fields like in the following examples:
 
 ```ruby
-  b = User.first.balance
-```
-* NOTE *
+b = User.first.balance
+````
+
+####NOTES
  - calculate_attrs caches the value. So next call to `b.balance` will *NOT* run anothes SQL query
 
 ###Relation
