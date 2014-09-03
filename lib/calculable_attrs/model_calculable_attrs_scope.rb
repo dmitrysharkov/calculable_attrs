@@ -7,6 +7,14 @@ class CalculableAttrs::ModelCalculableAttrsScope
     @ids = []
   end
 
+  def add_attrs(attrs)
+    if attrs == true || attrs == [ true ]
+      add_all_attrs
+    else
+      attrs.each { |attr| scope.add_attr(attr) }
+    end
+  end
+
   def add_attr(attribute)
     attribute = attribute.to_sym
     @attrs.push(attribute) unless @attrs.include?(attribute)
@@ -37,6 +45,15 @@ class CalculableAttrs::ModelCalculableAttrsScope
   end
 
 
+  def calculators_to_use
+    calculators_to_use = []
+    @attrs.each do |attribute|
+      calculator = @model.calculable_attrs_calculators[attribute]
+      calculators_to_use.push(calculator) unless calculators_to_use.include?(calculator)
+    end
+    calculators_to_use
+  end
+
   private
 
   def merge_calculated_values(calculated_values)
@@ -47,12 +64,5 @@ class CalculableAttrs::ModelCalculableAttrsScope
     end
   end
 
-  def calculators_to_use
-    calculators_to_use = []
-    @attrs.each do |attribute|
-      calculator = @model.calculable_attrs_calculators[attribute]
-      calculators_to_use.push(calculator) unless calculators_to_use.include?(calculator)
-    end
-    calculators_to_use
-  end
+
 end

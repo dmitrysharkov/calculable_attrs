@@ -1,6 +1,6 @@
 class CalculableAttrs::Calculator
   CALCULABLE_FOREIGN_KEY = '__calculable_id__'
-  attr_reader :attrs, :relation, :foreign_key
+  attr_reader :attrs, :relation, :foreign_key, :defaults
 
   def initialize(relation: nil, foreign_key: nil, attributes: nil)
     @relation = relation
@@ -25,10 +25,18 @@ class CalculableAttrs::Calculator
     end
   end
 
+  def calculable_foreign_key
+    CALCULABLE_FOREIGN_KEY
+  end
+
   def calculate_many(attrs, ids)
-    query = base_query(attrs, ids).select("#{ @foreign_key } AS #{ CALCULABLE_FOREIGN_KEY }").group(@foreign_key)
+    query = query_with_grouping(attrs, ids)
     records = query.load
     normalize_many_records_result(ids, attrs, records)
+  end
+
+  def query_with_grouping(attrs, ids)
+    base_query(attrs, ids).select("#{ @foreign_key } AS #{ calculable_foreign_key }").group(@foreign_key)
   end
 
   def calculate_one(attrs, id)
@@ -45,7 +53,15 @@ class CalculableAttrs::Calculator
   end
 
   def scoped_relation(id)
-    @relation.call.where( @foreign_key => id)
+    if id
+      @relation.call.where( @foreign_key => id)
+    else
+      @relation.call
+    end
+  end
+
+  def default(attr)
+    @defaults.key?(attr) ? @defaults[attr] : 0
   end
 
   private
@@ -80,7 +96,7 @@ class CalculableAttrs::Calculator
   end
 
   def normalize_one_record_result(attrs, record)
-    attrs.map { |a| [a, record.try(a) || ( @defaults.key?(a) ? @defaults[a] : 0)] }.to_h
+    attrs.map { |a| [a, record.try(a) || default(a)] }.to_h
   end
 
 
