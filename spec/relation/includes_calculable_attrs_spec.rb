@@ -9,8 +9,8 @@ describe CalculableAttrs::ActiveRecord::Relation do
     end
 
     context 'method exists' do
-      subject { Account.all.calculate_attrs }
-      it { is_expected.to respond_to :calculate_attrs }
+      subject { Account.all.includes_calculable_attrs }
+      it { is_expected.to respond_to :includes_calculable_attrs }
     end
 
     describe 'without subordinated objects' do
@@ -29,22 +29,22 @@ describe CalculableAttrs::ActiveRecord::Relation do
       end
 
       context 'one attribute' do
-        subject { Account.all.calculate_attrs(:balance) }
+        subject { Account.all.includes_calculable_attrs(:balance) }
         it_behaves_like  'balance attribute works in proper way'
       end
 
       context 'two attributes' do
-        subject { Account.all.calculate_attrs(:balance, :number_of_transactions) }
+        subject { Account.all.includes_calculable_attrs(:balance, :number_of_transactions) }
         it_behaves_like 'balance and number_of_transactions attributes in proper way'
       end
 
       context 'true as parameter' do
-        subject { Account.all.calculate_attrs(true) }
+        subject { Account.all.includes_calculable_attrs(true) }
         it_behaves_like 'balance and number_of_transactions attributes in proper way'
       end
 
       context 'no parameters' do
-        subject { Account.all.calculate_attrs }
+        subject { Account.all.includes_calculable_attrs }
         it_behaves_like 'balance and number_of_transactions attributes in proper way'
       end
     end
@@ -83,36 +83,36 @@ describe CalculableAttrs::ActiveRecord::Relation do
         end
 
         context 'one attribute' do
-          let(:scope) { shared_scope.calculate_attrs(:balance, accounts: :balance) }
+          let(:scope) { shared_scope.includes_calculable_attrs(:balance, accounts: :balance) }
           it_behaves_like 'balance attribute works in proper way'
         end
 
         context 'tree attributes' do
-          let(:scope) { shared_scope.calculate_attrs(:balance, :number_of_transactions, :number_of_accounts, accounts: [:balance, :number_of_transactions]) }
+          let(:scope) { shared_scope.includes_calculable_attrs(:balance, :number_of_transactions, :number_of_accounts, accounts: [:balance, :number_of_transactions]) }
           it_behaves_like 'balance and number_of_transactions attributes in proper way'
         end
 
         context 'true as parameter' do
-          let(:scope) { shared_scope.calculate_attrs(true, accounts: true) }
+          let(:scope) { shared_scope.includes_calculable_attrs(true, accounts: true) }
           it_behaves_like 'balance and number_of_transactions attributes in proper way'
         end
 
         context 'no parameters' do
-          let(:scope) { shared_scope.calculate_attrs(true, :accounts) }
+          let(:scope) { shared_scope.includes_calculable_attrs(true, :accounts) }
           it_behaves_like 'balance and number_of_transactions attributes in proper way'
         end
       end
 
       context 'when belongs to' do
         context 'one attribute' do
-          subject { Account.includes(:user).calculate_attrs(user: :balance).order(:user_id).map {|acc| acc.user.balance}.sort }
+          subject { Account.includes(:user).includes_calculable_attrs(user: :balance).order(:user_id).map {|acc| acc.user.balance}.sort }
           it { is_expected.to eq [600, 600, 600, 6000, 6000, 6000, 60000, 60000, 60000] }
           it { expect(lambda { subject }).to be_executed_sqls(3) }
         end
 
         context 'two attributes' do
           subject {
-            Account.includes(:user).calculate_attrs(user: [:balance, :number_of_transactions]).order(:user_id)
+            Account.includes(:user).includes_calculable_attrs(user: [:balance, :number_of_transactions]).order(:user_id)
              .to_a.map {|acc| [acc.user.balance, acc.user.number_of_transactions] }
           }
           it { is_expected.to eq [[600,60], [600,60], [600,60], [6000, 60], [6000,60], [6000,60], [60000,60], [60000,60], [60000,60]] }
