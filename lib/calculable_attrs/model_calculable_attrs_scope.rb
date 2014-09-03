@@ -11,7 +11,7 @@ class CalculableAttrs::ModelCalculableAttrsScope
     if attrs == true || attrs == [ true ]
       add_all_attrs
     else
-      attrs.each { |attr| scope.add_attr(attr) }
+      attrs.each { |attr| add_attr(attr) }
     end
   end
 
