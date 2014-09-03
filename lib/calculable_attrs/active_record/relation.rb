@@ -1,5 +1,5 @@
 module CalculableAttrs::ActiveRecord::Relation
-  JOINED_RELATION_NAME = 'calculated_atts'
+  JOINED_RELATION_NAME = 'calculated_attrs'
 
   def includes_calculable_attrs(*attrs)
     spawn.includes_calculable_attrs!(*attrs)
