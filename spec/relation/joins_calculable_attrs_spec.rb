@@ -58,6 +58,8 @@ describe CalculableAttrs::ActiveRecord::Relation do
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
             it { expect(subject.count('*')).to eq 7 }
+            it { expect(subject.sum('1')).to eq 7 }
+            it { expect(subject.sum(:id)).to be > 7 }
             it { expect(lambda { subject.load }).to be_executed_sqls(1) }
           end
 
@@ -67,6 +69,8 @@ describe CalculableAttrs::ActiveRecord::Relation do
               it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200, 300, 400, 500] }
               it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20, 30, 40, 50] }
               it { expect(subject.count('*')).to eq 10 }
+              it { expect(subject.sum('1')).to eq 10 }
+              it { expect(subject.sum(:id)).to be > 10 }
               it { expect(lambda { subject.load }).to be_executed_sqls(1) }
             end
           end
@@ -86,6 +90,8 @@ describe CalculableAttrs::ActiveRecord::Relation do
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
             it { expect(subject.count('*')).to eq 7 }
+            it { expect(subject.sum('1')).to eq 7 }
+            it { expect(subject.sum(:id)).to be > 7 }
             it { expect(lambda { subject.load }).to be_executed_sqls(1) }
           end
 

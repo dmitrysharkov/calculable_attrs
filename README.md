@@ -229,3 +229,12 @@ You will be able to combine `#joins_calculable_attrs` with `#includes_calculable
  - `#joins_calculable_attrs` undergrads associations (just like`includes` or `joins`)
  - It's possible to combine `#joins_calculable_attrs` with `#includes_calculable_attrs`. Calculable_attrs will minimize number of SQL queries in this case.
  - `#joins_calculable_attrs` for nested records is *NOT* implemented yet.
+
+###Calulations
+Calulations are *NOT* impelemted for calculable atts yet. But you can user where clayses for in static fields calculations.
+See examples blow
+
+```ruby
+  c1 = Account.includes_calculable_attrs.where('accounts.balance > 1000').count(*)
+  c2 = Account.includes_calculable_attrs.where('accounts.balance > 1000').min(:id)
+```
