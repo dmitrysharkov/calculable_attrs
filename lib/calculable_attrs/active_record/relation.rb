@@ -25,6 +25,7 @@ module CalculableAttrs::ActiveRecord::Relation
   def self.included(base)
     base.class_eval do
       alias_method :calculable_orig_exec_queries, :exec_queries
+      alias_method :calculable_orig_calculate, :calculate
       def exec_queries
         if calculable_attrs_joined.empty?
           calculable_orig_exec_queries
@@ -33,6 +34,15 @@ module CalculableAttrs::ActiveRecord::Relation
         end
         apped_calculable_attrs
         @records
+      end
+
+      def calculate(operation, column_name, options = {})
+        if calculable_attrs_joined.empty?
+          calculable_orig_calculate(operation,column_name,options)
+        else
+          relation = wrap_with_calculable_joins(spawn)
+          relation.calculable_orig_calculate(operation,column_name,options)
+        end
       end
     end
   end

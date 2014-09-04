@@ -57,6 +57,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
             subject { Account.all.joins_calculable_attrs(:balance).where('accounts.balance < 300') }
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(subject.count('*')).to eq 7 }
             it { expect(lambda { subject.load }).to be_executed_sqls(1) }
           end
 
@@ -65,6 +66,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
               subject { Account.all.joins_calculable_attrs(:balance, :number_of_transactions).where('accounts.balance < 300 OR accounts.number_of_transactions >= 3') }
               it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200, 300, 400, 500] }
               it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20, 30, 40, 50] }
+              it { expect(subject.count('*')).to eq 10 }
               it { expect(lambda { subject.load }).to be_executed_sqls(1) }
             end
           end
@@ -75,6 +77,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
             subject { Account.all.joins_calculable_attrs(:balance).where(accounts: { balance: [0...300] })}
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(subject.count('*')).to eq 7 }
             it { expect(lambda { subject.load }).to be_executed_sqls(1) }
           end
 
@@ -82,12 +85,11 @@ describe CalculableAttrs::ActiveRecord::Relation do
             subject { Account.all.joins_calculable_attrs(:balance).where( balance: [0...300] )}
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(subject.count('*')).to eq 7 }
             it { expect(lambda { subject.load }).to be_executed_sqls(1) }
           end
 
         end
-
-
       end
     end
 
@@ -163,6 +165,9 @@ describe CalculableAttrs::ActiveRecord::Relation do
           let(:scope) { shared_scope.joins_calculable_attrs(true).calculate_attrs(true, :accounts) }
           it_behaves_like 'balance and number_of_transactions attributes in proper way'
         end
+
+
+
       end
 
     end
