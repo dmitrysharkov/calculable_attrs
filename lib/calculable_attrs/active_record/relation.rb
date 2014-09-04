@@ -18,30 +18,6 @@ module CalculableAttrs::ActiveRecord::Relation
 
   def joins_calculable_attrs!(*attrs)
     set_calculable_attrs_joined(refine_calculable_attrs(attrs))
-
-    scope = CalculableAttrs::ModelCalculableAttrsScope.new(klass)
-    scope.add_attrs(calculable_attrs_joined)
-    _select!("#{ klass.table_name }.*")
-    scope.calculators_to_use.each_with_index do |calcualtor, index|
-      joined_relation_name = '__' + JOINED_RELATION_NAME + '_' + index.to_s + '__'
-
-      attrs_to_calculate = scope.attrs && calcualtor.attrs
-      left_join_sql =
-<<-sql
-LEFT JOIN ( #{ calcualtor.query_with_grouping(attrs_to_calculate, nil).to_sql })
-AS #{ joined_relation_name }
-ON #{ joined_relation_name }.#{ calcualtor.calculable_foreign_key } = #{ klass.table_name }.id
-sql
-
-      calculable_values_sql = attrs_to_calculate.map do |attr|
-        attr_name = "#{ klass.name.underscore }_#{ attr }"
-        left_join_sql.sub!(" AS #{ attr }", " AS #{ attr_name }")
-        klass.send(:sanitize_sql, ["COALESCE(#{ joined_relation_name }.#{ attr_name }, ?) AS #{ attr_name }", calcualtor.default(attr)])
-      end.join(',')
-
-      joins!(left_join_sql)
-      _select!(calculable_values_sql)
-    end
     self
   end
 
@@ -50,14 +26,26 @@ sql
     base.class_eval do
       alias_method :calculable_orig_exec_queries, :exec_queries
       def exec_queries
-        calculable_orig_exec_queries
-        append_calculable_attrs
+        if calculable_attrs_joined.empty?
+          calculable_orig_exec_queries
+        else
+          wrap_with_left_joins_and_exec_queries
+        end
+        apped_calculable_attrs
         @records
       end
     end
   end
 
   private
+
+
+
+  def wrap_with_left_joins_and_exec_queries
+    relation = wrap_with_calculable_joins(spawn)
+    @records = relation.send(:calculable_orig_exec_queries)
+    @loaded = true
+  end
 
   def refine_calculable_attrs(attrs)
     attrs.reject!(&:blank?)
@@ -86,16 +74,83 @@ sql
     @values[:calculable_attrs_included] |= values
   end
 
-  def append_calculable_attrs
+  def wrap_with_calculable_joins(relation)
+    scope = CalculableAttrs::ModelCalculableAttrsScope.new(klass)
+    scope.add_attrs(calculable_attrs_joined)
+
+    original_sql = relation.to_sql
+
+    sql_parser = CalculableAttrs::Utils::SqlParser.new(original_sql)
+    select_sql_snippets = [sql_parser.first_select_snippet]
+    where_sql_snippet = sql_parser.last_where_snippet
+    relation.reset
+
+
+    scope.calculators_to_use.each_with_index do |calcualtor, index|
+      joined_relation_name = '__' + JOINED_RELATION_NAME + '_' + index.to_s + '__'
+
+      attrs_to_calculate = scope.attrs && calcualtor.attrs
+      left_join_sql = "LEFT JOIN ( #{ calcualtor.query_with_grouping(attrs_to_calculate, nil).to_sql })" +
+        " AS #{ joined_relation_name }" +
+        " ON #{ joined_relation_name }.#{ calcualtor.calculable_foreign_key } = #{ klass.table_name }.id"
+
+      calculable_values_sql = attrs_to_calculate.map do |attr|
+        attr_name = "#{ klass.name.underscore }_#{ attr }"
+        left_join_sql.sub!(" AS #{ attr }", " AS #{ attr_name }")
+        klass.send(:sanitize_sql, ["COALESCE(#{ joined_relation_name }.#{ attr_name }, ?) AS #{ attr_name }", calcualtor.default(attr)])
+      end.join(',')
+      select_sql_snippets << calculable_values_sql
+
+      if where_sql_snippet
+        attrs_to_calculate.each do |attr|
+          original_names = [
+            "#{ klass.table_name.underscore }.#{ attr }",
+            "\"#{ klass.table_name.underscore }\".#{ attr }",
+            "#{ klass.table_name.underscore }.\"#{ attr }\"",
+            "\"#{ klass.table_name.underscore }\".\"#{ attr }\"",
+          ]
+          replacement_name = "#{ joined_relation_name }.#{ klass.name.underscore }_#{ attr }"
+          replacement = klass.send(:sanitize_sql, ["COALESCE(#{ replacement_name }, ?)", calcualtor.default(attr)])
+          original_names.each { |original_name| where_sql_snippet.gsub!(original_name, replacement) }
+        end
+      end
+
+      relation.joins!(left_join_sql)
+
+    end
+    sql_select = select_sql_snippets.join(',')
+    #relation.rewhere(where_sql_snippet) if where_sql_snippet
+    if where_sql_snippet
+      relation.where_values = nil
+      relation.where!(where_sql_snippet)
+    end
+    relation._select!(sql_select)
+    relation
+  end
+
+
+
+  def apped_calculable_attrs
+    append_included_calculable_attrs
+    append_joinded_calculable_attrs
+  end
+
+  def append_included_calculable_attrs
     unless calculable_attrs_included.empty?
       attrs = calculable_attrs_included - calculable_attrs_joined
       models_calculable_scopes = collect_calculable_scopes(attrs)
       collect_models_ids(models_calculable_scopes, @records, attrs)
       models_calculable_scopes.values.each { |scope| scope.calculate }
       put_calculated_values(models_calculable_scopes, @records, attrs)
-      put_joined_calculated_values(@records)
     end
 
+    @records
+  end
+
+  def append_joinded_calculable_attrs
+    unless calculable_attrs_joined.empty?
+      put_joined_calculated_values(@records)
+    end
     @records
   end
 

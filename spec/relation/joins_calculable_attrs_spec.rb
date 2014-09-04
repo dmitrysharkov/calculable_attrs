@@ -15,37 +15,79 @@ describe CalculableAttrs::ActiveRecord::Relation do
 
     describe 'without subordinated objects' do
       before do
-        3.times { |i| create(:account, tr_count: 10 * (i + 1), tr_amount: 10) }
+        5.times { |i| create(:account, tr_count: 10 * (i + 1), tr_amount: 10) }
+        5.times { |i| create(:account, tr_count: 0) }
       end
 
-      shared_examples 'balance attribute works in proper way' do
-        it { expect(subject.map(&:balance).sort).to eq [100, 200, 300] }
-        it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+      context 'whithout where' do
+        shared_examples 'balance attribute works in proper way' do
+          it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200, 300, 400, 500] }
+          it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+        end
+
+        shared_examples 'balance and number_of_transactions attributes in proper way' do
+          it_behaves_like 'balance attribute works in proper way'
+          it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20, 30, 40, 50] }
+        end
+
+        context 'one attribute' do
+          subject { Account.all.joins_calculable_attrs(:balance) }
+          it_behaves_like  'balance attribute works in proper way'
+        end
+
+        context 'two attributes' do
+          subject { Account.all.joins_calculable_attrs(:balance, :number_of_transactions) }
+          it_behaves_like 'balance and number_of_transactions attributes in proper way'
+        end
+
+        context 'true as parameter' do
+          subject { Account.all.joins_calculable_attrs(true) }
+          it_behaves_like 'balance and number_of_transactions attributes in proper way'
+        end
+
+        context 'no parameters' do
+          subject { Account.all.joins_calculable_attrs }
+          it_behaves_like 'balance and number_of_transactions attributes in proper way'
+        end
       end
 
-      shared_examples 'balance and number_of_transactions attributes in proper way' do
-        it_behaves_like 'balance attribute works in proper way'
-        it { expect(subject.map(&:number_of_transactions).sort).to eq [10, 20, 30] }
-      end
+      context 'with where' do
+        context 'with strign condition' do
+          context 'one attribute' do
+            subject { Account.all.joins_calculable_attrs(:balance).where('accounts.balance < 300') }
+            it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
+            it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+          end
 
-      context 'one attribute' do
-        subject { Account.all.joins_calculable_attrs(:balance) }
-        it_behaves_like  'balance attribute works in proper way'
-      end
+          context 'two attributes' do
+            context 'one attribute' do
+              subject { Account.all.joins_calculable_attrs(:balance, :number_of_transactions).where('accounts.balance < 300 OR accounts.number_of_transactions >= 3') }
+              it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200, 300, 400, 500] }
+              it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20, 30, 40, 50] }
+              it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+            end
+          end
+        end
 
-      context 'two attributes' do
-        subject { Account.all.joins_calculable_attrs(:balance, :number_of_transactions) }
-        it_behaves_like 'balance and number_of_transactions attributes in proper way'
-      end
+        context 'with hash condition' do
+          context 'one attribute with table prefiex' do
+            subject { Account.all.joins_calculable_attrs(:balance).where(accounts: { balance: [0...300] })}
+            it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
+            it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+          end
 
-      context 'true as parameter' do
-        subject { Account.all.joins_calculable_attrs(true) }
-        it_behaves_like 'balance and number_of_transactions attributes in proper way'
-      end
+          context 'one attribute without table prefiex' do
+            subject { Account.all.joins_calculable_attrs(:balance).where( balance: [0...300] )}
+            it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
+            it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
+            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+          end
 
-      context 'no parameters' do
-        subject { Account.all.joins_calculable_attrs }
-        it_behaves_like 'balance and number_of_transactions attributes in proper way'
+        end
+
+
       end
     end
 

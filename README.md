@@ -5,7 +5,7 @@ calculable_attrs gem allows you to add dynamically calculable attributes (like b
 Just add recent version to your Gemfile:
 
 ```ruby
-gem 'calculable_attrs', '~> 0.0.9'
+gem 'calculable_attrs', '~> 0.0.10'
 ```
 
 ##Usage
@@ -161,8 +161,9 @@ To do this you have to use `#joins_calcululable_attrs`
 
 Take a look on example below.
 ```ruby
-  @users = Account.joins_calculable_attrs(:balance).where('account_balance > ?', 1000 )
+  @users = Account.joins_calculable_attrs(:balance).where('accounts.balance > ?', 1000 )
 ```
+You jast use `accounts.balance > ?` condition like if `balance` filed were a part of `accounts` table.
 
 It will generate the following SQL:
 ```sql
@@ -177,11 +178,35 @@ It will generate the following SQL:
       )
       AS __calculated_attrs_0__
       ON __calculated_attrs_0__.__calculable_id__ = accounts.id
-    WHERE (account_balance > 1000)
+    WHERE (COALESCE(__calculated_attrs_0__.account_balance, 0) > 1000)
 
 ```
 As you can see a subquery is used here that's why it will for work for SQLite. But anyway it generates only ony SQL query.
-Note that calculated attribute name in the resulting query will be `#{ Model.name.underscore}_#{ attr_name }`.
+Note that calculated attribute name in the resulting query will be `#{ Model.name.underscore}_#{ attr_name }`,
+but calculable_attrs will include it in resulting `Account` record anyway.
+
+One more example:
+It's also possible to calculate attrs for subordinate queries.
+```ruby
+  @accounts = Account.joins_calculable_attrs(:balance).where(accounts: { balance: [50..100] })
+```
+...
+
+```erb
+ <% @users.each |user|%>
+    <% users.accounts.each |acc|%>
+      User Account Balance: <%= acc.balance %>
+    <% end %>
+  <% end %>
+```
+The `balance` calculable attribute will be eager loaded so that there will be *NO* SQL queries in the loop.
+
+One more example.
+```ruby
+  @accounts = Account.joins_calculable_attrs(:balance).where(balance: [50..100])
+```
+
+
 
 You will be able to combine `#joins_calculable_attrs` with `#includes_calculable_attrs` like in example below.
 
@@ -202,7 +227,6 @@ You will be able to combine `#joins_calculable_attrs` with `#includes_calculable
 ####NOTES
  - `#joins_calculable_attrs` allow usage calculable attributes in where clauses.
  - `#joins_calculable_attrs` will generate left-joins subquery (will *NOT* work in SQLite).
- -  Generated attribute name will be `#{ Model.name.underscore}_#{ attr_name }` (like `account_balance`).
  - `#joins_calculable_attrs` undergrads associations (just like`includes` or `joins`)
  - It's possible to combine `#joins_calculable_attrs` with `#includes_calculable_attrs`. Calculable_attrs will minimize number of SQL queries in this case.
  - `#joins_calculable_attrs` for nested records is *NOT* implemented yet.
