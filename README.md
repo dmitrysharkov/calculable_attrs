@@ -5,7 +5,7 @@ calculable_attrs gem allows you to add dynamically calculable attributes (like b
 Just add recent version to your Gemfile:
 
 ```ruby
-gem 'calculable_attrs', '~> 0.0.10'
+gem 'calculable_attrs', '~> 0.0.11'
 ```
 
 ##Usage
