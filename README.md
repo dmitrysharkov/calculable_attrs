@@ -27,7 +27,7 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
   class User < ActiveRecord::Base
     has_many :accounts
     calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)', foreign_key: 'accounts.user_id') do
-      Transaction.joins(:account).all
+      Transaction.joins(:account)
     end
   end
 ```
@@ -36,7 +36,7 @@ calculable_attrs allows you to define dynamically calculable attributes balance 
   class Account < ActiveRecord::Base
     has_many :transactions
     belongs_to :user
-    calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account).all }
+    calculable_attr(balance: 'SUM(amount)', number_of_transactions: 'COUNT(*)') { Transaction.joins(:account) }
   end
 ```
 
