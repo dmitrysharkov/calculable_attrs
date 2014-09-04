@@ -185,8 +185,7 @@ As you can see a subquery is used here that's why it will for work for SQLite. B
 Note that calculated attribute name in the resulting query will be `#{ Model.name.underscore}_#{ attr_name }`,
 but calculable_attrs will include it in resulting `Account` record anyway.
 
-One more example:
-It's also possible to calculate attrs for subordinate queries.
+You can also use hash style in to specify where clause.
 ```ruby
   @accounts = Account.joins_calculable_attrs(:balance).where(accounts: { balance: [50..100] })
 ```
