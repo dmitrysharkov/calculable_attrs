@@ -31,6 +31,7 @@ module CalculableAttrs::ActiveRecord::Relation
           calculable_orig_exec_queries
         else
           wrap_with_left_joins_and_exec_queries
+          append_joinded_calculable_attrs
         end
         apped_calculable_attrs
         @records
