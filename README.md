@@ -109,7 +109,7 @@ It's also possible to calculate attrs for subordinate queries.
 
 ```erb
  <% @users.each do |user|%>
-    <% users.accounts.each |acc|%>
+    <% users.accounts.each do |acc|%>
       User Account Balance: <%= acc.balance %>
     <% end %>
   <% end %>
