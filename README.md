@@ -87,7 +87,7 @@ You will be able to include calculable attrs in the your queries like blow
 ...
 
 ```erb
-  <% @accounts.each |acc|%>
+  <% @accounts.each do |acc|%>
     Account Balance: <%= acc.balance %>
   <% end %>
 ```
@@ -108,7 +108,7 @@ It's also possible to calculate attrs for subordinate queries.
 ...
 
 ```erb
- <% @users.each |user|%>
+ <% @users.each do |user|%>
     <% users.accounts.each |acc|%>
       User Account Balance: <%= acc.balance %>
     <% end %>
@@ -123,10 +123,10 @@ Take a look of several more possible combinations of parameters below.
 ...
 
 ```erb
-  <% @users.each |user|%>
+  <% @users.each do |user|%>
     User Balance: <%= user.balance %>
     User Transactions: <%= user.number_of_transactions %>
-    <% users.accounts.each |acc|%>
+    <% users.accounts.each do |acc|%>
       User Account Balance: <%= acc.balance %>
       User Account Transactions: <%= acc.number_of_transactions %>
     <% end %>
@@ -139,10 +139,10 @@ Take a look of several more possible combinations of parameters below.
 ...
 
 ```erb
-  <% @users.each |user|%>
+  <% @users.each do |user|%>
     User Balance: <%= user.balance %>
     User Transactions: <%= user.number_of_transactions %>
-    <% users.accounts.each |acc|%>
+    <% users.accounts.each do |acc|%>
       User Account Balance: <%= acc.balance %>
       User Account Transactions: <%= acc.number_of_transactions %>
     <% end %>
@@ -193,8 +193,8 @@ You can also use hash style to specify where clause.
 ...
 
 ```erb
- <% @users.each |user|%>
-    <% users.accounts.each |acc|%>
+ <% @users.each do |user|%>
+    <% users.accounts.each do |acc|%>
       User Account Balance: <%= acc.balance %>
     <% end %>
   <% end %>
