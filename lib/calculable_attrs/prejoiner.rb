@@ -1,0 +1,3 @@
+class CalculableAttrs::Prejoiner
+
+end
