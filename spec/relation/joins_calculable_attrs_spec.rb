@@ -120,7 +120,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
         shared_examples 'balance attribute works in proper way' do
           it { expect(users_balances).to eq [600, 6000, 60000] }
           it { expect(accounts_balances).to eq [[100, 200, 300], [1000, 2000, 3000], [10000, 20000, 30000]] }
-          it { expect(lambda { scope.load }).to be_executed_sqls(3) }
+          it { expect(lambda { scope.load }).to be_executed_sqls(4) }
         end
 
         shared_examples 'balance and number_of_transactions attributes in proper way' do
@@ -129,7 +129,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
           it { expect(users_number_of_transactions).to eq [60, 60, 60] }
           it { expect(users_number_of_accounts).to eq [3, 3, 3] }
           it { expect(accounts_number_of_transactions).to eq [[10, 20, 30], [10, 20, 30], [10, 20, 30]] }
-          it { expect(lambda { scope.load }).to be_executed_sqls(3) }
+          it { expect(lambda { scope.load }).to be_executed_sqls(5) }
         end
 
         context 'one attribute' do

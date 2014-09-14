@@ -91,7 +91,7 @@ module CalculableAttrs::ActiveRecord::Relation
     original_sql = relation.to_sql
 
     sql_parser = CalculableAttrs::Utils::SqlParser.new(original_sql)
-    select_sql_snippets = [sql_parser.first_select_snippet]
+    #select_sql_snippets = [sql_parser.first_select_snippet]
     where_sql_snippet = sql_parser.last_where_snippet
     relation.reset
 
@@ -104,12 +104,12 @@ module CalculableAttrs::ActiveRecord::Relation
         " AS #{ joined_relation_name }" +
         " ON #{ joined_relation_name }.#{ calcualtor.calculable_foreign_key } = #{ klass.table_name }.id"
 
-      calculable_values_sql = attrs_to_calculate.map do |attr|
-        attr_name = "#{ klass.name.underscore }_#{ attr }"
-        left_join_sql.sub!(" AS #{ attr }", " AS #{ attr_name }")
-        klass.send(:sanitize_sql, ["COALESCE(#{ joined_relation_name }.#{ attr_name }, ?) AS #{ attr_name }", calcualtor.default(attr)])
-      end.join(',')
-      select_sql_snippets << calculable_values_sql
+      # calculable_values_sql = attrs_to_calculate.map do |attr|
+      #   attr_name = "#{ klass.name.underscore }_#{ attr }"
+      #   left_join_sql.sub!(" AS #{ attr }", " AS #{ attr_name }")
+      #   klass.send(:sanitize_sql, ["COALESCE(#{ joined_relation_name }.#{ attr_name }, ?) AS #{ attr_name }", calcualtor.default(attr)])
+      # end.join(',')
+      # select_sql_snippets << calculable_values_sql
 
       if where_sql_snippet
         attrs_to_calculate.each do |attr|
@@ -119,7 +119,7 @@ module CalculableAttrs::ActiveRecord::Relation
             "#{ klass.table_name.underscore }.\"#{ attr }\"",
             "\"#{ klass.table_name.underscore }\".\"#{ attr }\"",
           ]
-          replacement_name = "#{ joined_relation_name }.#{ klass.name.underscore }_#{ attr }"
+          replacement_name = "#{ joined_relation_name }.#{ attr }"
           replacement = klass.send(:sanitize_sql, ["COALESCE(#{ replacement_name }, ?)", calcualtor.default(attr)])
           original_names.each { |original_name| where_sql_snippet.gsub!(original_name, replacement) }
         end
@@ -128,13 +128,13 @@ module CalculableAttrs::ActiveRecord::Relation
       relation.joins!(left_join_sql)
 
     end
-    sql_select = select_sql_snippets.join(',')
+    #sql_select = select_sql_snippets.join(',')
     #relation.rewhere(where_sql_snippet) if where_sql_snippet
     if where_sql_snippet
       relation.where_values = nil
       relation.where!(where_sql_snippet)
     end
-    relation._select!(sql_select)
+    #relation._select!(sql_select)
     relation
   end
 
@@ -142,12 +142,13 @@ module CalculableAttrs::ActiveRecord::Relation
 
   def apped_calculable_attrs
     append_included_calculable_attrs
-    append_joinded_calculable_attrs
+    #append_joinded_calculable_attrs
   end
 
   def append_included_calculable_attrs
     unless calculable_attrs_included.empty?
-      attrs = calculable_attrs_included - calculable_attrs_joined
+      #attrs = calculable_attrs_included - calculable_attrs_joined
+      attrs = calculable_attrs_included | calculable_attrs_joined
       models_calculable_scopes = collect_calculable_scopes(attrs)
       collect_models_ids(models_calculable_scopes, @records, attrs)
       models_calculable_scopes.values.each { |scope| scope.calculate }

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    calculable_attrs (0.0.12)
+    calculable_attrs (0.0.13)
       activerecord (>= 3.2)
 
 GEM
