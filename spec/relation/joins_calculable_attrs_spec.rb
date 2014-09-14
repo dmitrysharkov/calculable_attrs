@@ -22,7 +22,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
       context 'whithout where' do
         shared_examples 'balance attribute works in proper way' do
           it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200, 300, 400, 500] }
-          it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+          it { expect(lambda { subject.load }).to be_executed_sqls(2) }
         end
 
         shared_examples 'balance and number_of_transactions attributes in proper way' do
@@ -60,7 +60,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
             it { expect(subject.count('*')).to eq 7 }
             it { expect(subject.sum('1')).to eq 7 }
             it { expect(subject.sum(:id)).to be > 7 }
-            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+            it { expect(lambda { subject.load }).to be_executed_sqls(2) }
           end
 
           context 'two attributes' do
@@ -71,7 +71,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
               it { expect(subject.count('*')).to eq 10 }
               it { expect(subject.sum('1')).to eq 10 }
               it { expect(subject.sum(:id)).to be > 10 }
-              it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+              it { expect(lambda { subject.load }).to be_executed_sqls(2) }
             end
           end
         end
@@ -82,7 +82,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
             it { expect(subject.map(&:number_of_transactions).sort).to eq [0, 0, 0, 0, 0, 10, 20] }
             it { expect(subject.map(&:balance).sort).to eq [0, 0, 0, 0, 0, 100, 200] }
             it { expect(subject.count('*')).to eq 7 }
-            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+            it { expect(lambda { subject.load }).to be_executed_sqls(2) }
           end
 
           context 'one attribute without table prefiex' do
@@ -92,7 +92,7 @@ describe CalculableAttrs::ActiveRecord::Relation do
             it { expect(subject.count('*')).to eq 7 }
             it { expect(subject.sum('1')).to eq 7 }
             it { expect(subject.sum(:id)).to be > 7 }
-            it { expect(lambda { subject.load }).to be_executed_sqls(1) }
+            it { expect(lambda { subject.load }).to be_executed_sqls(2) }
           end
 
         end

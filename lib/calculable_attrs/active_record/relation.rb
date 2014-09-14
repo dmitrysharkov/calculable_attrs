@@ -146,7 +146,7 @@ module CalculableAttrs::ActiveRecord::Relation
   end
 
   def append_included_calculable_attrs
-    unless calculable_attrs_included.empty?
+    unless calculable_attrs_included.empty? && calculable_attrs_joined.empty?
       #attrs = calculable_attrs_included - calculable_attrs_joined
       attrs = calculable_attrs_included | calculable_attrs_joined
       models_calculable_scopes = collect_calculable_scopes(attrs)
