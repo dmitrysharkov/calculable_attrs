@@ -5,6 +5,7 @@ end
 require 'calculable_attrs/active_record'
 require 'calculable_attrs/calculator'
 require 'calculable_attrs/preloader'
+require 'calculable_attrs/prejoiner'
 require 'calculable_attrs/model_calculable_attrs_scope'
 require 'calculable_attrs/utils/sql_parser'
 
